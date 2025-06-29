@@ -1,0 +1,22 @@
+.scale {
+  position: absolute;
+  z-index: -1;
+  font-size: 0.75vw;
+  top: 10.5vw;
+  color: #302b2b;
+}
+
+.scale-bar {
+  position: absolute;
+  width: 0.1vw;
+  height: 43vw;
+  background: rgba(85, 81, 81, 0.8);
+}
+
+.scale-value {
+  position: absolute;
+  width: 8vw;
+  left: 0.5vw;
+  text-align: left;
+  font-weight: 800;
+}

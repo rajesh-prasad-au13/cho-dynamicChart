@@ -1,0 +1,57 @@
+.item-container {
+  font-family: sans-serif;
+  font-size: 1.25vw;
+}
+
+.year {
+  position: absolute;
+  top: 44vw;
+  left: 80vw;
+  font-size: 7vw;
+  z-index: 20;
+  font-weight: 600;
+}
+
+.year .progress {
+  height: 1.5vw;
+  background: rgb(194, 6, 6);
+  margin-top: -1vw;
+}
+
+.representative {
+  background-size: contain;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  width: 18vw;
+  height: 15vw;
+  position: absolute;
+  top: 29.5vw;
+  left: 79vw;
+  z-index: 20;
+}
+
+.additional {
+  position: absolute;
+  top: 10vw;
+  right: 2vw;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1vw;
+  border-radius: 0.5vw;
+}
+
+.additional table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.additional th {
+  background: #333;
+  color: white;
+  padding: 0.5vw;
+  text-align: left;
+}
+
+.additional td {
+  padding: 0.25vw 0.5vw;
+  border-bottom: 1px solid #ddd;
+}
