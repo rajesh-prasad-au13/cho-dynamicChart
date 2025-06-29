@@ -8,24 +8,29 @@
   </div>
 </template>
 
-<script>
-import { formatter } from "./mixin/formatter";
+<script setup>
+import { computed } from "vue";
+import { formatter } from "./mixin/formatter.js";
 
-export default {
-  name: "Scale",
-  mixins: [formatter],
-  props: {
-    left: Number,
-    value: Number,
-    unit: String,
-    margin: Number,
-  },
-  computed: {
-    formattedValue: function () {
-      return this.numberWithCommas(this.value.toFixed(this.fixed)) + this.unit;
-    },
-  },
-};
+// Props
+const props = defineProps({
+  left: Number,
+  value: Number,
+  unit: String,
+  margin: Number,
+  fixed: {
+    type: Number,
+    default: 0
+  }
+});
+
+// Use the formatter mixin methods
+const { numberWithCommas } = formatter.methods;
+
+// Computed properties
+const formattedValue = computed(() => {
+  return numberWithCommas(props.value.toFixed(props.fixed)) + props.unit;
+});
 </script>
 
 <style scoped>

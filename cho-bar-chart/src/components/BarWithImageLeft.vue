@@ -1,25 +1,14 @@
 <template>
   <div
+    ref="itemEl"
     v-bind:id="id"
     class="item"
     v-bind:class="[size.toString()]"
-    style="
-       {
-        opacity: 0;
-      }
-    "
+    style="opacity: 0;"
   >
     <div class="item-icon">
       <!--{{ team }}-->
-      <img
-        v-bind:src="img"
-        style="
-           {
-            width: 15px;
-            height: 15px;
-          }
-        "
-      />
+      <img v-bind:src="img" style="width: 15px; height: 15px;" />
     </div>
     <div class="item-bar" v-bind:style="{ background: color }">
       <span class="item-label">{{ label }}</span>
@@ -29,48 +18,75 @@
   </div>
 </template>
 
-<script>
-import { formatter } from "./mixin/formatter";
+<script setup>
+import { computed, ref } from "vue";
+import { formatter } from "./mixin/formatter.js";
 
-export default {
-  name: "BarWithImageLeft",
-  mixins: [formatter],
-  props: {
-    color: String,
-    img: String,
-    size: Number,
-    label: String,
-    value: Number,
-    unit: String,
-    team: String,
-    fixed: {
-      type: Number,
-      default: 0,
-    },
-  },
-  computed: {
-    id: function () {
-      return `item-id-${this.label}`;
-    },
-    formattedValue: function () {
-      return this.numberWithCommas(this.value.toFixed(this.fixed)) + this.unit;
-    },
-    imgUrl: function () {
-      return `url(${this.img})`;
-    },
-  },
-  methods: {
-    setWidth: function (width) {
-      this.$el.querySelector(".item-bar").style.width = width;
-    },
-    invisible: function () {
-      this.$el.style.opacity = 0;
-    },
-    visible: function () {
-      this.$el.style.opacity = 1;
-    },
-  },
+// Props
+const props = defineProps({
+  color: String,
+  img: String,
+  size: Number,
+  label: String,
+  value: Number,
+  unit: String,
+  team: String,
+  fixed: {
+    type: Number,
+    default: 0
+  }
+});
+
+// Template refs
+const itemEl = ref(null);
+
+// Use the formatter mixin methods
+const { numberWithCommas } = formatter.methods;
+
+// Computed properties
+const id = computed(() => {
+  return `item-id-${props.label}`;
+});
+
+const formattedValue = computed(() => {
+  return numberWithCommas(props.value.toFixed(props.fixed)) + props.unit;
+});
+
+const imgUrl = computed(() => {
+  return `url(${props.img})`;
+});
+
+// Methods
+const setWidth = width => {
+  if (itemEl.value) {
+    const itemBar = itemEl.value.querySelector(".item-bar");
+    if (itemBar) {
+      itemBar.style.width = width;
+    }
+  }
 };
+
+const invisible = () => {
+  if (itemEl.value) {
+    itemEl.value.style.opacity = 0;
+  }
+};
+
+const visible = () => {
+  if (itemEl.value) {
+    itemEl.value.style.opacity = 1;
+  }
+};
+
+// Expose methods to parent
+defineExpose({
+  setWidth,
+  invisible,
+  visible,
+  label: props.label,
+  value: props.value,
+  $el: itemEl
+});
 </script>
 
 <style scoped>
@@ -87,7 +103,7 @@ export default {
   text-align: left;
   line-height: 3vw;
   margin-left: 1vw;
-  color: #FFF;
+  color: #fff;
   text-shadow: 0 0 10px #000;
   /*width:100%;*/
 }
@@ -97,7 +113,7 @@ export default {
   line-height: 3vw;
   /*height: 2.5vw;*/
   /*line-height: 2.5vw;*/
-  color: #FFF;
+  color: #fff;
   text-shadow: 0 0 10px #000;
   margin-right: 1vw;
 }
@@ -137,7 +153,7 @@ export default {
   text-align: right;
 }
 .item-icon .item-marker span {
-  color: #FFF;
+  color: #fff;
   text-shadow: 0 0 10px #000;
 }
 .item-icon img {

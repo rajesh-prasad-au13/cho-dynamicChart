@@ -1,28 +1,25 @@
 <template>
   <div id="wrapper">
-    <template v-for="(scale, i) in scaleList">
-      <scale
-        :key="'scale' + i"
-        v-bind="scale"
-        v-bind:unit="unit"
-        v-bind:margin="15.3"
-      ></scale>
-    </template>
+    <scale
+      v-for="(scale, i) in scaleList"
+      :key="'scale' + i"
+      v-bind="scale"
+      v-bind:unit="unit"
+      v-bind:margin="15.3"
+    ></scale>
     <div
       id="container"
       class="item-container"
       style="height: 500px; overflow: visible"
     >
-      <template v-if="barType == 'barWithImageLeft'">
-        <template v-for="(bar, i) in barList">
-          <barWithImageLeft
-            :ref="'bars'"
-            :key="i"
-            v-bind="bar"
-            v-bind:unit="unit"
-          ></barWithImageLeft>
-        </template>
-      </template>
+      <barWithImageLeft
+        v-if="barType == 'barWithImageLeft'"
+        v-for="(bar, i) in barList"
+        :ref="'bars'"
+        :key="i"
+        v-bind="bar"
+        v-bind:unit="unit"
+      ></barWithImageLeft>
     </div>
     <div id="year" class="year">
       <div>{{ year }}</div>
@@ -35,9 +32,9 @@
     <div class="additional">
       <table>
         <thead>
-          {{
-            additionalTitle
-          }}
+          <tr>
+            <th>{{ additionalTitle }}</th>
+          </tr>
         </thead>
         <tbody id="additional-info"></tbody>
       </table>
@@ -64,81 +61,81 @@ export default {
     barType: {
       type: String,
       default: "barWithImageLeft",
-      validator: function (value) {
+      validator: function(value) {
         return ["barWithImageLeft"].indexOf(value) !== -1;
-      },
+      }
     },
     interval: {
       type: Number,
-      default: 2 * 1000,
+      default: 2 * 1000
     },
     limit: {
       type: Number,
-      default: 15,
+      default: 15
     },
     shuffleSpeed: {
       type: Number,
-      default: 1000,
+      default: 1000
     },
     stats: {
-      type: Array,
+      type: Array
     },
     labelInfo: {
-      type: Object,
+      type: Object
     },
     date: {
-      type: Array,
+      type: Array
     },
     fixed: {
       type: Number,
-      default: 0,
+      default: 0
     },
     scale: {
       type: Number,
-      default: 500000000,
+      default: 500000000
     },
     maximum: {
       type: Number,
-      default: 0,
+      default: 0
     },
     dynamic: {
       type: Boolean,
-      default: false,
+      default: false
     },
     unit: {
       type: String,
-      default: "",
+      default: ""
     },
     tweening: {
       type: Boolean,
-      default: true,
+      default: true
     },
     additional: {
       type: Boolean,
-      default: false,
+      default: false
     },
     additionalLimit: {
       type: Number,
-      default: 0,
+      default: 0
     },
     additionalTitle: {
       type: String,
-      default: "",
+      default: ""
     },
     additionalStats: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     additionalUnit: {
       type: String,
-      default: "",
+      default: ""
     },
     additionalCand: {
       type: Array,
-      default: () => [],
-    },
+      default: () => []
+    }
   },
-  data: function () {
+  data: function() {
     return {
       barList: [],
       instance: null,
@@ -147,21 +144,21 @@ export default {
       nullNumber: 0,
       representativeImg: "",
       year: 0,
-      progress: 1,
+      progress: 1
     };
   },
   computed: {
-    progressWidth: function () {
+    progressWidth: function() {
       // console.log(this.progress * 100 + '%')
       return this.progress * 100 + "%";
-    },
+    }
   },
-  created: function () {
+  created: function() {
     this.scaleUnit = this.scale;
     this.$options.barDict = {};
   },
-  updated: function () {
-    this.$refs["bars"].forEach((vue) => {
+  updated: function() {
+    this.$refs["bars"].forEach(vue => {
       if (!(vue.label in this.$options.barDict)) {
         this.$options.barDict[vue.label] = vue;
         this.instance.add([vue.$el]);
@@ -170,7 +167,7 @@ export default {
     });
   },
   methods: {
-    $_charToNum: function (str) {
+    $_charToNum: function(str) {
       // console.log(str)
       let ret = 0;
       for (let i = 0; i < Math.max(str.length, 5); i++) {
@@ -178,7 +175,7 @@ export default {
       }
       return ret;
     },
-    $_getBarValue: function (element) {
+    $_getBarValue: function(element) {
       const label = element.id.slice(8);
       // console.log(label)
       if (this.$options.barDict[label]) {
@@ -189,7 +186,7 @@ export default {
         return 0;
       }
     },
-    $_getWidth: function (cur, max, min = 0) {
+    $_getWidth: function(cur, max, min = 0) {
       const maximum = Math.max(max, this.maximum);
       const offset = 0.1;
       const frontWidth = 0.7;
@@ -206,7 +203,7 @@ export default {
           (offset + (cur / max) * frontWidth + (cur / maximum) * backWidth) * 75
         );
     },
-    $_adjustChart: function () {
+    $_adjustChart: function() {
       const bars = Object.values(this.$options.barDict).sort((v1, v2) => {
         return (
           v2.value +
@@ -217,14 +214,17 @@ export default {
       if (bars.length > 0) {
         const top = bars[0];
         const max = top.value;
-        const min = this.dynamic ? bars[this.limit - 1] * 0.9 : 0;
+        const min =
+          this.dynamic && bars.length >= this.limit
+            ? bars[this.limit - 1].value * 0.9
+            : 0;
 
         this.representativeImg = top.img;
         this.$_adjustWidth(bars, max, min);
         this.$_adjustScale(max, min);
       }
     },
-    $_adjustWidth: function (bars, max, min) {
+    $_adjustWidth: function(bars, max, min) {
       // to handle the equal value problem
       // top.value = top.value + 0.00000000000001
       for (const [i, v] of bars.entries()) {
@@ -239,37 +239,37 @@ export default {
         }
       }
     },
-    $_adjustScale: function (max, min) {
+    $_adjustScale: function(max, min) {
       const start = this.scaleList.length
         ? this.scaleList[this.scaleList.length - 1].value + this.scaleUnit
         : this.scaleUnit;
       for (let value = start; value < max * 1.1; value += this.scaleUnit) {
         this.scaleList.push({
           value: value,
-          left: 0,
+          left: 0
         });
       }
       const cnt = this.scaleList.length;
       if (cnt > 8) {
         this.scaleUnit = this.scaleUnit * 2;
-        this.scaleList = this.scaleList.filter((_, i) => i & (1 === 0));
+        this.scaleList = this.scaleList.filter((_, i) => (i & 1) === 0);
       } else if (cnt < 4) {
         this.scaleUnit = Math.round(this.scaleUnit / 2);
         this.scaleList = this.scaleList.concat(
-          this.scaleList.map((v) => ({
+          this.scaleList.map(v => ({
             value: v.value - this.scaleUnit,
-            left: 0,
+            left: 0
           }))
         );
       }
       this.scaleList = this.scaleList.filter(
-        (v) => min <= v.value && v.value <= max
+        v => min <= v.value && v.value <= max
       );
       for (const scale of this.scaleList) {
         scale.left = this.$_getWidth(scale.value, max, min);
       }
     },
-    $_createBar: function (data) {
+    $_createBar: function(data) {
       const value = parseFloat(data.value);
       if (!isNaN(value)) {
         const { color, img } = this.$_getBarLabelInfo(data);
@@ -280,12 +280,12 @@ export default {
           img: img,
           size: 10,
           fixed: this.fixed,
-          team: data.team,
+          team: data.team
         };
         this.barList.push(bar);
       }
     },
-    $_getBarLabelInfo: function (data) {
+    $_getBarLabelInfo: function(data) {
       if (data.team) {
         const info = this.labelInfo[data.team];
         if (info) return info;
@@ -296,22 +296,22 @@ export default {
       }
       throw new Error(`Unknown label ${data.label}`);
     },
-    $_sortNodeBar: function () {
+    $_sortNodeBar: function() {
       this.instance.sort({
-        by: (element) => {
+        by: element => {
           return this.$_getBarValue(element);
         },
-        reverse: true,
+        reverse: true
       });
     },
-    $_getBarObject: function (label) {
-      return this.barList.find((bar) => bar.label === label);
-    },
+    $_getBarObject: function(label) {
+      return this.barList.find(bar => bar.label === label);
+    }
   },
   mounted() {
     this.instance = new Shuffle(document.getElementById("container"), {
       itemSelector: ".item",
-      speed: this.shuffleSpeed,
+      speed: this.shuffleSpeed
     });
     // set initial data
     this.year = this.date[0];
@@ -337,7 +337,7 @@ export default {
               prevData = {
                 label: stat.label,
                 value: this.nullNumber,
-                team: stat.team,
+                team: stat.team
               };
               this.$_createBar(prevData);
             }
@@ -376,8 +376,8 @@ export default {
   },
   components: {
     barWithImageLeft,
-    scale,
-  },
+    scale
+  }
 };
 </script>
 
