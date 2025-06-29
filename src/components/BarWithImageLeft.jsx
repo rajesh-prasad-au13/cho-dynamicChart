@@ -3,15 +3,29 @@ import { numberWithCommas } from "../utils/formatter";
 import "./BarWithImageLeft.css";
 
 const BarWithImageLeft = forwardRef(
-  ({ color, img, size, label, value, unit, team, fixed = 0 }, ref) => {
+  (
+    {
+      color = "#4CAF50",
+      img,
+      size = 1,
+      label,
+      value,
+      unit = "",
+      team,
+      fixed = 0,
+      width = 0,
+      rank = 1,
+    },
+    ref
+  ) => {
     const itemRef = useRef(null);
     const itemBarRef = useRef(null);
 
     const formattedValue = numberWithCommas(value.toFixed(fixed)) + unit;
-    const id = `item-id-${label}`;
+    const id = `chartBar${label}`; // Match the ID format expected by DynamicChart
 
     useImperativeHandle(ref, () => ({
-      setWidth: width => {
+      setWidth: (width) => {
         if (itemBarRef.current) {
           itemBarRef.current.style.width = width;
         }
@@ -27,7 +41,7 @@ const BarWithImageLeft = forwardRef(
         }
       },
       label,
-      value
+      value,
     }));
 
     return (
@@ -35,20 +49,37 @@ const BarWithImageLeft = forwardRef(
         ref={itemRef}
         id={id}
         className={`item ${size.toString()}`}
-        style={{ opacity: 0 }} // Start invisible and reveal through animation
+        style={{ opacity: 1 }} // Make visible by default
       >
         <div className="item-icon">
-          <img src={img} style={{ width: "15px", height: "15px" }} alt={team} />
+          {img && (
+            <img
+              src={img}
+              style={{ width: "15px", height: "15px" }}
+              alt={team || label}
+            />
+          )}
+          {!img && (
+            <div
+              style={{
+                width: "15px",
+                height: "15px",
+                backgroundColor: color,
+                borderRadius: "2px",
+              }}
+            />
+          )}
         </div>
         <div
           ref={itemBarRef}
           className="item-bar"
-          style={{ background: color }}
+          style={{ background: color, width: `${width}%` }}
         >
           <span className="item-label">{label}</span>
           <span className="team-label">{team}</span>
         </div>
         <div className="item-value">{formattedValue}</div>
+        <div className="item-rank">#{rank}</div>
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import React from "react";
-import DynamicChart from "../components/DynamicChart";
+import DynamicChartFixed from "../components/DynamicChartFixed";
+import TestBars from "../components/TestBars";
 import { stats } from "../data/result";
 import { labelInfo } from "../data/indiaInfo";
 
@@ -11,7 +12,9 @@ const HomePage = () => {
 
   return (
     <div className="home-page">
-      <DynamicChart
+      <TestBars />
+      <hr />
+      <DynamicChartFixed
         barType="barWithImageLeft"
         interval={2000}
         limit={15}

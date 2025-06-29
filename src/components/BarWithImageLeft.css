@@ -67,3 +67,12 @@
   white-space: nowrap;
   display: inline-block;
 }
+
+.item-rank {
+  text-align: left;
+  padding-left: 0.5vw;
+  line-height: 3vw;
+  font-weight: bold;
+  color: #666;
+  min-width: 2vw;
+}
